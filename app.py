@@ -14,7 +14,8 @@ def parseMain(input_link, header):
         if not temp_link:
             continue
         # hardcoded logic for websites :)
-        if (('government_moscow.tilda.ws' in temp_link) or ('css-mosreg.online' in temp_link)) and (temp_link not in url_list) and ('#' not in temp_link):
+        if (('government_moscow.tilda.ws' in temp_link) or ('css-mosreg.online' in temp_link))\
+                and (temp_link not in url_list) and ('#' not in temp_link):
             url_list.append(temp_link)
         if ('google.com' in temp_link) and (temp_link not in url_list):
             url_list.append(temp_link)

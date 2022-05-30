@@ -80,10 +80,10 @@ if __name__ == '__main__':
             print('[INFO] Running...')
             parse_exceptions(exception_url, headers)
             prase_urls(url_list, headers)
-            parse_content(url_list, headers, contentText)
+            parse_content(url_list, headers, content_text)
         else:
             prase_urls(url_list, headers)
-            parse_content(url_list, headers, contentText)
+            parse_content(url_list, headers, content_text)
             print('[INFO] Running...')
     else:
         print(f'{url} is wrong value\nShutting down... :(')

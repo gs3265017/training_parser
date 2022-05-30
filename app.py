@@ -1,11 +1,12 @@
 import time
 import requests
 import validators
+import re
 from bs4 import BeautifulSoup
 
 
-def parseMain(input_link, header):
-    """parsing list of collectetd urls from the main page"""
+def parse_main(input_link, header):
+    """parses the main page"""
     html_content = requests.get(input_link, header)
     soup = BeautifulSoup(html_content.content, 'html.parser')
     for link in soup.find_all('a'):
@@ -23,20 +24,20 @@ def parseMain(input_link, header):
             # you can add your unique url here, or write new logic
             url_list.append('http://frontside.ru' + temp_link)
         time.sleep(1)
-    return print(f'[INFO] -- parse_main -- function result:\n URLS: \n {url_list}\n Titles: \n {title_list}')
+    return print(f'[INFO] -- parse_main -- function result:\n URLS:\n    {url_list}\n Titles:\n    {title_list}')
 
 
-def parseUrls(urls_list, header):
-    """parsing list of collectetd urls from the main page"""
+def prase_urls(urls_list, header):
+    """parses list of collectetd urls from the main page"""
     for element in urls_list:
         html_content = requests.get(element, header)
         soup = BeautifulSoup(html_content.content, 'html.parser')
         title_list.append(soup.title.text)
-    return print(f'[INFO] -- parse_urls -- function result:\n Titles: \n {title_list}')
+    return print(f'[INFO] -- prase_urls -- function result:\nTitles:\n    {title_list}')
 
 
-def parseExceptions(exceptions, header):
-    """parses unique links, that can hold bunch of urls, that was not getted with parseMain()"""
+def parse_exceptions(exceptions, header):
+    """parses unique links, that can hold bunch of urls, that was not getted with parse_main()"""
     html_content = requests.get(exceptions, header)
     soup = BeautifulSoup(html_content.text, 'html.parser')
     for link in soup.find_all('a'):
@@ -45,20 +46,24 @@ def parseExceptions(exceptions, header):
             continue
         if 'page' in temp_link:
             url_list.append('https://css-mosreg.online' + temp_link)
+    return print(f'[INFO] -- parse_exceptions -- function results:\n    URLS: {url_list}!')
 
 
-def parseContent(urls, header):
+
+def parse_content(urls, header, file):
     """ parses content from all collected links"""
     for element in urls:
         html_content = requests.get(element, header)
         soup = BeautifulSoup(html_content.text, 'html.parser')
-        print(soup.get_text())
-    return print(f'-- parse_urls -- function result:\n Titles: \n {title_list}')
+        for link in soup.find(string=re.compile("rec")):
+            file.write(link + '\n')
+    return print(f'[INFO] -- parse_content -- function results:\n    !FILE WRITTEN!')
 
 
 if __name__ == '__main__':
     url_list = []
     title_list = []
+    content_text = open('contentText.txt', 'w')
     headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET',
@@ -68,17 +73,17 @@ if __name__ == '__main__':
     }
     url = input('Enter url for parsing: \n')  # enter your url here, code was written for url's - http://frontside.ru/, https://css-mosreg.online, https://google.com
     if validators.url(url):
-        parseMain(url, headers)
+        parse_main(url, headers)
         proceed = str(input('Is there any exceptions? (y/n): '))
         if proceed[0].lower() == 'y':
             exception_url = input('Enter url...')
             print('[INFO] Running...')
-            parseExceptions(exception_url, headers)
-            parseUrls(url_list, headers)
-            parseContent(url_list, headers)
+            parse_exceptions(exception_url, headers)
+            prase_urls(url_list, headers)
+            parse_content(url_list, headers, contentText)
         else:
-            parseUrls(url_list, headers)
-            parseContent(url_list, headers)
+            prase_urls(url_list, headers)
+            parse_content(url_list, headers, contentText)
             print('[INFO] Running...')
     else:
         print(f'{url} is wrong value\nShutting down... :(')

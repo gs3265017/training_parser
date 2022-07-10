@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 
 
 def parse_main(input_link, header):
-    """parses the main page"""
     html_content = requests.get(input_link, header)
     soup = BeautifulSoup(html_content.content, 'html.parser')
     for link in soup.find_all('a'):
@@ -14,7 +13,6 @@ def parse_main(input_link, header):
         print('Link: ', temp_link)
         if not temp_link:
             continue
-        # hardcoded logic for websites :)
         if (('government_moscow.tilda.ws' in temp_link) or ('css-mosreg.online' in temp_link))\
                 and (temp_link not in url_list) and ('#' not in temp_link):
             url_list.append(temp_link)
@@ -28,7 +26,6 @@ def parse_main(input_link, header):
 
 
 def prase_urls(urls_list, header):
-    """parses list of collectetd urls from the main page"""
     for element in urls_list:
         html_content = requests.get(element, header)
         soup = BeautifulSoup(html_content.content, 'html.parser')
@@ -37,7 +34,6 @@ def prase_urls(urls_list, header):
 
 
 def parse_exceptions(exceptions, header):
-    """parses unique links, that can hold bunch of urls, that was not getted with parse_main()"""
     html_content = requests.get(exceptions, header)
     soup = BeautifulSoup(html_content.text, 'html.parser')
     for link in soup.find_all('a'):
@@ -51,12 +47,11 @@ def parse_exceptions(exceptions, header):
 
 
 def parse_content(urls, header, file):
-    """ parses content from all collected links"""
     for element in urls:
         html_content = requests.get(element, header)
         soup = BeautifulSoup(html_content.text, 'html.parser')
         for link in soup.find(string=re.compile("rec")):
-            file.write(link + '\n')
+
     return print(f'[INFO] -- parse_content -- function results:\n    !FILE WRITTEN!')
 
 
@@ -71,7 +66,7 @@ if __name__ == '__main__':
         'Access-Control-Max-Age': '3600',
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:100.0) Gecko/20100101 Firefox/100.0'
     }
-    url = input('Enter url for parsing: \n')  # enter your url here, code was written for url's - http://frontside.ru/, https://css-mosreg.online, https://google.com
+    url = input('Enter url for parsing: \n')  # code was written for url's - http://frontside.ru/, https://css-mosreg.online, https://google.com
     if validators.url(url):
         parse_main(url, headers)
         proceed = str(input('Is there any exceptions? (y/n): '))
